@@ -16,6 +16,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 //TODO: CREATE TENNIS PLAYER CLASS AND IMPLEMENT ITS USE IN THE MAIN TENNIS CLASS
@@ -24,6 +26,15 @@ import javafx.stage.Stage;
 //TODO: CHECK FOR ANGLES THAT ARE CL
 //TODO: OR FIX THE WAY YOU MOVE THE BALL COMPLETELY BY TAKING INTO ACCOUNT
 //      THE HIPOTENUSA AS THE BALL_SPEED AND USING COSINE AND SINE 
+
+enum Collision_Elements{
+	UPPER_WALL,
+	LOWER_WALL,
+	LEFT_WALL,
+	RIGHT_WALL,
+	PLAYER_1,
+	PLAYER_2
+}
 
 public class Tennis extends Application{
 	
@@ -46,8 +57,9 @@ public class Tennis extends Application{
 	private Canvas canvas;
 	private Rectangle player1Rec;
 	private Rectangle player2Rec;
-	private Circle gameBall;
 	private double movingAngle;
+	TennisBall gameBall;
+	Group root;
 	
 	//Random class
 	Random rand;
@@ -56,15 +68,28 @@ public class Tennis extends Application{
 	
 	//Constructor of the class
 	public Tennis() {
-		 rand = new Random();
-		 inputList = new ArrayList<String>();
-		 movingAngle = rand.nextDouble() * (2*Math.PI);
-		 movingAngle = Math.toRadians(1);
+		rand = new Random();
+		
+		//Creating the ball
+		gameBall = new TennisBall(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
 		 
+		inputList = new ArrayList<String>();
+		movingAngle = rand.nextDouble() * (2*Math.PI);
+		movingAngle = Math.toRadians(15);
+		 
+		 // Making sure the ball doesn't go completely in a vertical line or diagonal line because it would get stuck in that position if that occurs
 		 if(movingAngle == Math.toRadians(270)) {
 			 movingAngle = Math.toRadians(270) - Math.toRadians(30);
 		 }else if(movingAngle == Math.toRadians(90)) {
 			 movingAngle = Math.toRadians(90) + Math.toRadians(30);
+		 }else if(movingAngle== Math.toRadians(45)) {
+			 movingAngle = Math.toRadians(45) + Math.toRadians(5);
+		 }else if(movingAngle== Math.toRadians(90+45)) {
+			 movingAngle = Math.toRadians(90+45) + Math.toRadians(5);
+		 }else if(movingAngle== Math.toRadians(180+45)) {
+			 movingAngle = Math.toRadians(180+45) + Math.toRadians(5);
+		 }else if(movingAngle== Math.toRadians(270+45)) {
+			 movingAngle = Math.toRadians(270+45) + Math.toRadians(5);
 		 }
 	}
 
@@ -75,7 +100,7 @@ public class Tennis extends Application{
 		
 		// Create group that will contain a lot of child nodes and include the 
 		// gamePlayScene into this new group
-		Group root = new Group();
+		root = new Group();
 		Scene gamePlayScene = new Scene(root);
 		
 		// Add the scene to the stage
@@ -99,15 +124,13 @@ public class Tennis extends Application{
 		player1Rec.setFill(Color.WHITE);
 		player2Rec.setFill(Color.WHITE);
 		
-		//Creating the ball
-		TennisBall  gameBall = new TennisBall(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
-		
 		// Adding circle to the root group
 		root.getChildren().add(gameBall.getTennisBall());
 		
 		//Adding rectangles to root group
 		root.getChildren().add(player1Rec);
 		root.getChildren().add(player2Rec);
+		
 		
 		// Key Handlers
 		// When a key is pressed we add that input to the inputList
@@ -182,6 +205,61 @@ public class Tennis extends Application{
 	}
 	
 	public void checkCollisions() {
+		
+		// Checking collisions between any of the players and the walls
+		
+		// The second parameter of the bounceBall function is the element the ball is crashing against 
+		/*
+		 * enum Element_In_Game{
+			UPPER_WALL,
+			LOWER_WALL,
+			LEFT_WALL,
+			RIGHT_WALL,
+			PLAYER_1,
+			PLAYER_2}
+		 * */
+		
+		
+		// Checking collisions between the ball and the walls 
+		if(gameBall.getCurrentPositionX() < 0) {
+			movingAngle = gameBall.bounceBall(movingAngle, Collision_Elements.LEFT_WALL);
+		}else if(gameBall.getCurrentPositionX() > 500){
+			movingAngle = gameBall.bounceBall(movingAngle, Collision_Elements.RIGHT_WALL);
+		}else if(gameBall.getCurrentPositionY() > 500) {
+			movingAngle = gameBall.bounceBall(movingAngle, Collision_Elements.LOWER_WALL);
+		}else if(gameBall.getCurrentPositionY() < 0) {
+			movingAngle = gameBall.bounceBall(movingAngle, Collision_Elements.UPPER_WALL);
+		}
+		
+
+		// If moving angle is -1, then left player scored a point
+		if(movingAngle == -1) {
+			movingAngle = 0;
+			scoredPoint(players.LEFT_PLAYER);
+		}
+		// If moving angle is -2, then right player scored a point
+		if(movingAngle == -2) {
+			movingAngle = 0;
+			scoredPoint(players.RIGHT_PLAYER);
+		}
+		
+	}
+	
+	private void scoredPoint(players playerWhoScored) {
+		Text playerScored;
+		if(playerWhoScored == players.RIGHT_PLAYER) {
+			playerScored = new Text(150, 250, "Player 2 Scored!");
+		}else {
+			playerScored = new Text(150, 250, "Player 1 Scored!");
+		}
+		playerScored.setFont(Font.font("Verdana", 25));
+		playerScored.setFill(Color.WHITE);
+		root.getChildren().add(playerScored);
+		
+		restartGame();
+	}
+	
+	private void restartGame() {
 		
 	}
 	

@@ -45,32 +45,44 @@ public class TennisBall {
 		double check = Math.tan(angle);
 		
 		// Determine the change in X and Y based on the given angle (angle is in degrees)
-		double changeInX = (1 * BALL_SPEED)/Math.tan(angle);
-		double changeInY = (Math.tan(angle) * BALL_SPEED)/Math.tan(angle);
-		
-		if(Math.tan(angle) < 1) {
-			changeInX = BALL_SPEED;
-			changeInY = Math.tan(angle) * BALL_SPEED;
-		}
-		
-		//Special angle cases
-		if(angle == 0) {
-			changeInX = BALL_SPEED;
-			changeInY = 0;
-		}
-		if(angle == Math.PI) {
-			changeInX = -BALL_SPEED;
-			changeInY = 0;
-		}
-		if(angle > Math.PI/2 && angle < Math.PI) {
-			changeInX *= -BALL_SPEED;
-		}
-		if(angle >= 0 && angle <= Math.PI/2) {
-			changeInY *= -BALL_SPEED;
-		}
+		double changeInX = Math.cos(angle) * BALL_SPEED;
+		double changeInY = -(Math.sin(angle) * BALL_SPEED);
 		
 		setCurrentPositionX(currentPositionX + changeInX);
 		setCurrentPositionY(currentPositionY + changeInY);
+	}
+	
+	public double bounceBall(double angle, Collision_Elements element) {
+		double newAngle = 0;
+		//Special cases first 0, 45, 90 + 45, 180, 180 + 45, 270 + 45  
+		
+		//Normal cases
+		if(element == Collision_Elements.UPPER_WALL || element == Collision_Elements.LOWER_WALL) {
+			newAngle = 2*Math.PI - angle;
+		} else if(element == Collision_Elements.RIGHT_WALL) {
+			newAngle = -1;
+		} else if(element == Collision_Elements.LEFT_WALL) {
+			newAngle = -2;
+		}
+		
+		/*if(element == Collision_Elements.UPPER_WALL) { // If ball is bouncing in upper wall
+			// if angle is between 0 and 90 degrees
+			if(angle > 0 && angle < Math.PI/2) {
+				newAngle = (2*Math.PI) - angle;
+			}else if(angle > Math.PI/2 && angle < Math.PI) { // if angle is between 90 and 180 degrees
+				newAngle = (2*Math.PI) - angle;
+			}
+			
+		}else if(element == Collision_Elements.LOWER_WALL) {
+			// if angle is between 180 and 270 degrees
+			if(angle > Math.PI && angle < (3*Math.PI)/2) {
+				newAngle = (2*Math.PI) - angle;
+			}else if(angle > (3*Math.PI)/2 && angle < 2*Math.PI ) { // if angle is between 270 and 360 degrees
+				newAngle = (2*Math.PI) - angle;
+			}
+		}*/ 
+		
+		return newAngle;
 	}
 	
 	public Circle getTennisBall() {
