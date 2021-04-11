@@ -42,16 +42,12 @@ public class Tennis extends Application{
 	private static final int SCREEN_WIDTH = 500;
 	
 	//TODO: THIS WILL GO INTO THE PLAYER CLASS
-	private static final int PLAYER_HEIGHT = 100;
-	private static final int PLAYER_WIDTH  = 20;
-	
-	private static final double INITIAL_POS_X2 = 500 - PLAYER_WIDTH;
-	private static final double INITIAL_POS_Y2 = 250-PLAYER_HEIGHT/2;
-	//////////////////////////////////////////
+	private static final double INITIAL_POS_X2 = 500 - TennisPlayer.PLAYER_WIDTH;
+	private static final double INITIAL_POS_Y2 = 250-TennisPlayer.PLAYER_HEIGHT/2;
 
 	private static final double INITIAL_POS_X1 = 0;
-	private static final double INITIAL_POS_Y1 = 250-PLAYER_HEIGHT/2;
-
+	private static final double INITIAL_POS_Y1 = 250-TennisPlayer.PLAYER_HEIGHT/2;
+	////////////////////////////////////////////
 	
 	private GraphicsContext gc;
 	private Canvas canvas;
@@ -75,7 +71,7 @@ public class Tennis extends Application{
 		 
 		inputList = new ArrayList<String>();
 		movingAngle = rand.nextDouble() * (2*Math.PI);
-		movingAngle = Math.toRadians(15);
+		movingAngle = Math.toRadians(170);
 		 
 		 // Making sure the ball doesn't go completely in a vertical line or diagonal line because it would get stuck in that position if that occurs
 		 if(movingAngle == Math.toRadians(270)) {
@@ -119,8 +115,8 @@ public class Tennis extends Application{
 				
 				
 		//Drawing rectangles at the initial positions
-		player1Rec = new Rectangle(INITIAL_POS_X1, INITIAL_POS_Y1, PLAYER_WIDTH,PLAYER_HEIGHT);
-		player2Rec = new Rectangle(INITIAL_POS_X2, INITIAL_POS_Y2, PLAYER_WIDTH,PLAYER_HEIGHT);
+		player1Rec = new Rectangle(INITIAL_POS_X1, INITIAL_POS_Y1, TennisPlayer.PLAYER_WIDTH,TennisPlayer.PLAYER_HEIGHT);
+		player2Rec = new Rectangle(INITIAL_POS_X2, INITIAL_POS_Y2, TennisPlayer.PLAYER_WIDTH,TennisPlayer.PLAYER_HEIGHT);
 		player1Rec.setFill(Color.WHITE);
 		player2Rec.setFill(Color.WHITE);
 		
@@ -207,6 +203,13 @@ public class Tennis extends Application{
 	public void checkCollisions() {
 		
 		// Checking collisions between any of the players and the walls
+		// Checking collision with right player
+		if(gameBall.getCurrentPositionX() > player2Rec.getX() && gameBall.getCurrentPositionY() > player2Rec.getY() && gameBall.getCurrentPositionY() < (player2Rec.getY()) + TennisPlayer.PLAYER_HEIGHT) {
+			movingAngle = gameBall.bounceBall(movingAngle, Collision_Elements.PLAYER_2, player2Rec);
+		}
+		if(gameBall.getCurrentPositionX() < (player1Rec.getX() + TennisPlayer.PLAYER_WIDTH) && gameBall.getCurrentPositionY() > player1Rec.getY() && gameBall.getCurrentPositionY() < (player1Rec.getY()) + TennisPlayer.PLAYER_HEIGHT) {
+			movingAngle = gameBall.bounceBall(movingAngle, Collision_Elements.PLAYER_1, player1Rec);
+		}
 		
 		// The second parameter of the bounceBall function is the element the ball is crashing against 
 		/*
@@ -222,13 +225,13 @@ public class Tennis extends Application{
 		
 		// Checking collisions between the ball and the walls 
 		if(gameBall.getCurrentPositionX() < 0) {
-			movingAngle = gameBall.bounceBall(movingAngle, Collision_Elements.LEFT_WALL);
+			movingAngle = gameBall.bounceBall(movingAngle, Collision_Elements.LEFT_WALL, null);
 		}else if(gameBall.getCurrentPositionX() > 500){
-			movingAngle = gameBall.bounceBall(movingAngle, Collision_Elements.RIGHT_WALL);
+			movingAngle = gameBall.bounceBall(movingAngle, Collision_Elements.RIGHT_WALL, null);
 		}else if(gameBall.getCurrentPositionY() > 500) {
-			movingAngle = gameBall.bounceBall(movingAngle, Collision_Elements.LOWER_WALL);
+			movingAngle = gameBall.bounceBall(movingAngle, Collision_Elements.LOWER_WALL, null);
 		}else if(gameBall.getCurrentPositionY() < 0) {
-			movingAngle = gameBall.bounceBall(movingAngle, Collision_Elements.UPPER_WALL);
+			movingAngle = gameBall.bounceBall(movingAngle, Collision_Elements.UPPER_WALL, null);
 		}
 		
 
@@ -239,7 +242,7 @@ public class Tennis extends Application{
 		}
 		// If moving angle is -2, then right player scored a point
 		if(movingAngle == -2) {
-			movingAngle = 0;
+			movingAngle = -Math.PI;
 			scoredPoint(players.RIGHT_PLAYER);
 		}
 		
@@ -270,7 +273,7 @@ public class Tennis extends Application{
 	}
 	
 	private void moveLeftDown() {
-		if(!(player1Rec.getY() > 500 - PLAYER_HEIGHT)) {
+		if(!(player1Rec.getY() > 500 - TennisPlayer.PLAYER_HEIGHT)) {
 			player1Rec.setY(player1Rec.getY()+5);
 		}
 	}
@@ -282,7 +285,7 @@ public class Tennis extends Application{
 	}
 	
 	private void moveRightDown() {
-		if(!(player2Rec.getY() > 500 - PLAYER_HEIGHT)) {
+		if(!(player2Rec.getY() > 500 - TennisPlayer.PLAYER_HEIGHT)) {
 			player2Rec.setY(player2Rec.getY()+5);
 		}
 	}

@@ -2,6 +2,7 @@ package Pong;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 
 public class TennisBall {
 	
@@ -52,11 +53,25 @@ public class TennisBall {
 		setCurrentPositionY(currentPositionY + changeInY);
 	}
 	
-	public double bounceBall(double angle, Collision_Elements element) {
+	public double bounceBall(double angle, Collision_Elements element, Rectangle paddle) {
 		double newAngle = 0;
 		//Special cases first 0, 45, 90 + 45, 180, 180 + 45, 270 + 45  
 		
-		//Normal cases
+		//Normal cases - Players (When colliding with the players we disregard the angle in which the ball is colliding, we just take into account
+		//                        the place in which the ball touches the paddle at the moment of the collision)
+		if(element == Collision_Elements.PLAYER_2) {
+			double relativeIntersection = (paddle.getY() + (TennisPlayer.PLAYER_HEIGHT/2)) - this.currentPositionY;
+			if(relativeIntersection > 45) {
+				newAngle = Math.toRadians(115);
+			}else if(relativeIntersection < -45) {
+				newAngle = Math.toRadians(285);
+			}
+		}
+		if(element == Collision_Elements.PLAYER_1) {
+			double relativeIntersection = (paddle.getY() + (TennisPlayer.PLAYER_HEIGHT/2)) - this.currentPositionY;
+		}
+		
+		//Normal cases - Walls
 		if(element == Collision_Elements.UPPER_WALL || element == Collision_Elements.LOWER_WALL) {
 			newAngle = 2*Math.PI - angle;
 		} else if(element == Collision_Elements.RIGHT_WALL) {
@@ -64,6 +79,7 @@ public class TennisBall {
 		} else if(element == Collision_Elements.LEFT_WALL) {
 			newAngle = -2;
 		}
+		
 		
 		/*if(element == Collision_Elements.UPPER_WALL) { // If ball is bouncing in upper wall
 			// if angle is between 0 and 90 degrees
