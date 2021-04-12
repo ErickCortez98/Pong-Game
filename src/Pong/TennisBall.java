@@ -6,8 +6,9 @@ import javafx.scene.shape.Rectangle;
 
 public class TennisBall {
 	
+	private static final int MAX_BOUNCE_ANGLE_DEGREES = 65; 
 	public static final int BALL_R = 8;
-	private static final int  BALL_SPEED = 4;
+	private static final int  BALL_SPEED = 6;
 	private double currentPositionX;
 	private double currentPositionY;
 	private Circle gameBall;
@@ -57,19 +58,45 @@ public class TennisBall {
 		double newAngle = 0;
 		//Special cases first 0, 45, 90 + 45, 180, 180 + 45, 270 + 45  
 		
+		
 		//Normal cases - Players (When colliding with the players we disregard the angle in which the ball is colliding, we just take into account
 		//                        the place in which the ball touches the paddle at the moment of the collision)
-		if(element == Collision_Elements.PLAYER_2) {
-			double relativeIntersection = (paddle.getY() + (TennisPlayer.PLAYER_HEIGHT/2)) - this.currentPositionY;
-			if(relativeIntersection > 45) {
-				newAngle = Math.toRadians(115);
-			}else if(relativeIntersection < -45) {
-				newAngle = Math.toRadians(285);
-			}
-		}
 		if(element == Collision_Elements.PLAYER_1) {
 			double relativeIntersection = (paddle.getY() + (TennisPlayer.PLAYER_HEIGHT/2)) - this.currentPositionY;
+			
+			if(relativeIntersection > 45) {
+				newAngle = Math.toRadians(75);
+			}else if(relativeIntersection < -45) {
+				newAngle = 2*Math.PI - Math.toRadians(75);
+			}
+			
+			double normalizedRelativeInter = (relativeIntersection*2.22) / 100;
+			
+			if(normalizedRelativeInter > 0) {
+				newAngle = normalizedRelativeInter * Math.toRadians(MAX_BOUNCE_ANGLE_DEGREES);
+			}else {
+				newAngle = 2*Math.PI + (normalizedRelativeInter * Math.toRadians(MAX_BOUNCE_ANGLE_DEGREES));
+			}
 		}
+		if(element == Collision_Elements.PLAYER_2) {
+			double relativeIntersection = (paddle.getY() + (TennisPlayer.PLAYER_HEIGHT/2)) - this.currentPositionY;
+			
+			if(relativeIntersection > 45) {
+				newAngle = Math.toRadians(105);
+			}else if(relativeIntersection < -45) {
+				newAngle = Math.toRadians(180+75);
+			}
+			
+			double normalizedRelativeInter = (relativeIntersection*2.22) / 100;
+			
+			if(normalizedRelativeInter > 0) {
+				newAngle = Math.PI - (normalizedRelativeInter * Math.toRadians(MAX_BOUNCE_ANGLE_DEGREES));
+			}else {
+				newAngle = Math.PI - (normalizedRelativeInter * Math.toRadians(MAX_BOUNCE_ANGLE_DEGREES));
+			}
+			
+		}
+		
 		
 		//Normal cases - Walls
 		if(element == Collision_Elements.UPPER_WALL || element == Collision_Elements.LOWER_WALL) {

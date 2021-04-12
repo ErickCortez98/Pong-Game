@@ -71,8 +71,6 @@ public class Tennis extends Application{
 		 
 		inputList = new ArrayList<String>();
 		movingAngle = rand.nextDouble() * (2*Math.PI);
-		movingAngle = Math.toRadians(170);
-		 
 		 // Making sure the ball doesn't go completely in a vertical line or diagonal line because it would get stuck in that position if that occurs
 		 if(movingAngle == Math.toRadians(270)) {
 			 movingAngle = Math.toRadians(270) - Math.toRadians(30);
@@ -242,7 +240,7 @@ public class Tennis extends Application{
 		}
 		// If moving angle is -2, then right player scored a point
 		if(movingAngle == -2) {
-			movingAngle = -Math.PI;
+			movingAngle = Math.PI;
 			scoredPoint(players.RIGHT_PLAYER);
 		}
 		
