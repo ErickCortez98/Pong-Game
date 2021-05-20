@@ -41,20 +41,16 @@ public class Tennis extends Application{
 	private static final int SCREEN_HEIGHT = 500;
 	private static final int SCREEN_WIDTH = 500;
 	
-	//TODO: THIS WILL GO INTO THE PLAYER CLASS
-	private static final double INITIAL_POS_X2 = 500 - TennisPlayer.PLAYER_WIDTH;
-	private static final double INITIAL_POS_Y2 = 250-TennisPlayer.PLAYER_HEIGHT/2;
-
-	private static final double INITIAL_POS_X1 = 0;
-	private static final double INITIAL_POS_Y1 = 250-TennisPlayer.PLAYER_HEIGHT/2;
-	////////////////////////////////////////////
-	
 	private GraphicsContext gc;
 	private Canvas canvas;
 	private Rectangle player1Rec;
 	private Rectangle player2Rec;
 	private double movingAngle;
+	
 	TennisBall gameBall;
+	TennisPlayer playerLeft;
+	TennisPlayer playerRight;
+	
 	Group root;
 	
 	//Random class
@@ -68,9 +64,13 @@ public class Tennis extends Application{
 		
 		//Creating the ball
 		gameBall = new TennisBall(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+		
+		//Creating the players
+		playerLeft = new TennisPlayer(0, true);
+		playerRight = new TennisPlayer(0, false);
 		 
 		inputList = new ArrayList<String>();
-		movingAngle = rand.nextDouble() * (2*Math.PI);
+		movingAngle = rand.nextDouble() * (2*Math.PI); 
 		 // Making sure the ball doesn't go completely in a vertical line or diagonal line because it would get stuck in that position if that occurs
 		 if(movingAngle == Math.toRadians(270)) {
 			 movingAngle = Math.toRadians(270) - Math.toRadians(30);
@@ -113,18 +113,15 @@ public class Tennis extends Application{
 				
 				
 		//Drawing rectangles at the initial positions
-		player1Rec = new Rectangle(INITIAL_POS_X1, INITIAL_POS_Y1, TennisPlayer.PLAYER_WIDTH,TennisPlayer.PLAYER_HEIGHT);
-		player2Rec = new Rectangle(INITIAL_POS_X2, INITIAL_POS_Y2, TennisPlayer.PLAYER_WIDTH,TennisPlayer.PLAYER_HEIGHT);
-		player1Rec.setFill(Color.WHITE);
-		player2Rec.setFill(Color.WHITE);
+		playerLeft.getPlayerRectangle().setFill(Color.WHITE);
+		playerRight.getPlayerRectangle().setFill(Color.WHITE);
 		
 		// Adding circle to the root group
 		root.getChildren().add(gameBall.getTennisBall());
 		
-		//Adding rectangles to root group
-		root.getChildren().add(player1Rec);
-		root.getChildren().add(player2Rec);
-		
+		//Adding rectangles to root group 
+		root.getChildren().add(playerLeft.getPlayerRectangle());
+		root.getChildren().add(playerRight.getPlayerRectangle());
 		
 		// Key Handlers
 		// When a key is pressed we add that input to the inputList
@@ -146,7 +143,6 @@ public class Tennis extends Application{
 				new EventHandler<KeyEvent>() {
 					public void handle(KeyEvent e) {
 						String input = e.getCode().toString();
-						
 						
 						inputList.remove(input);
 					}
@@ -202,11 +198,11 @@ public class Tennis extends Application{
 		
 		// Checking collisions between any of the players and the walls
 		// Checking collision with right player
-		if(gameBall.getCurrentPositionX() > player2Rec.getX() && gameBall.getCurrentPositionY() > player2Rec.getY() && gameBall.getCurrentPositionY() < (player2Rec.getY()) + TennisPlayer.PLAYER_HEIGHT) {
-			movingAngle = gameBall.bounceBall(movingAngle, Collision_Elements.PLAYER_2, player2Rec);
+		if(gameBall.getCurrentPositionX() > playerRight.getPlayerRectangle().getX() && gameBall.getCurrentPositionY() > playerRight.getPlayerRectangle().getY() && gameBall.getCurrentPositionY() < (playerRight.getPlayerRectangle().getY()) + TennisPlayer.PLAYER_HEIGHT) {
+			movingAngle = gameBall.bounceBall(movingAngle, Collision_Elements.PLAYER_2, playerRight.getPlayerRectangle());
 		}
-		if(gameBall.getCurrentPositionX() < (player1Rec.getX() + TennisPlayer.PLAYER_WIDTH) && gameBall.getCurrentPositionY() > player1Rec.getY() && gameBall.getCurrentPositionY() < (player1Rec.getY()) + TennisPlayer.PLAYER_HEIGHT) {
-			movingAngle = gameBall.bounceBall(movingAngle, Collision_Elements.PLAYER_1, player1Rec);
+		if(gameBall.getCurrentPositionX() < (playerLeft.getPlayerRectangle().getX() + TennisPlayer.PLAYER_WIDTH) && gameBall.getCurrentPositionY() > playerLeft.getPlayerRectangle().getY() && gameBall.getCurrentPositionY() < (playerLeft.getPlayerRectangle().getY()) + TennisPlayer.PLAYER_HEIGHT) {
+			movingAngle = gameBall.bounceBall(movingAngle, Collision_Elements.PLAYER_1, playerLeft.getPlayerRectangle());
 		}
 		
 		// The second parameter of the bounceBall function is the element the ball is crashing against 
@@ -265,26 +261,26 @@ public class Tennis extends Application{
 	}
 	
 	private void moveLeftUp() {
-		if(!(player1Rec.getY() < 0)) {
-			player1Rec.setY(player1Rec.getY()-5);
+		if(!(playerLeft.getPlayerRectangle().getY() < 0)) {
+			playerLeft.getPlayerRectangle().setY(playerLeft.getPlayerRectangle().getY()-5);
 		}
 	}
 	
 	private void moveLeftDown() {
-		if(!(player1Rec.getY() > 500 - TennisPlayer.PLAYER_HEIGHT)) {
-			player1Rec.setY(player1Rec.getY()+5);
+		if(!(playerLeft.getPlayerRectangle().getY() > 500 - TennisPlayer.PLAYER_HEIGHT)) {
+			playerLeft.getPlayerRectangle().setY(playerLeft.getPlayerRectangle().getY()+5);
 		}
 	}
 	
 	private void moveRightUp() {
-		if(!(player2Rec.getY() < 0)) {
-			player2Rec.setY(player2Rec.getY()-5);
+		if(!(playerRight.getPlayerRectangle().getY() < 0)) {
+			playerRight.getPlayerRectangle().setY(playerRight.getPlayerRectangle().getY()-5);
 		}
 	}
 	
 	private void moveRightDown() {
-		if(!(player2Rec.getY() > 500 - TennisPlayer.PLAYER_HEIGHT)) {
-			player2Rec.setY(player2Rec.getY()+5);
+		if(!(playerRight.getPlayerRectangle().getY() > 500 - TennisPlayer.PLAYER_HEIGHT)) {
+			playerRight.getPlayerRectangle().setY(playerRight.getPlayerRectangle().getY()+5);
 		}
 	}
 	
